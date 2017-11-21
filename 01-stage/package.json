@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "axios": "^0.17.1",
+    "express": "^4.16.2"
+  },
+  "name": "01-stage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT"
+}
