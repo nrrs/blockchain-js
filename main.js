@@ -56,6 +56,10 @@ norrisCoin.addBlock(new Block(1, "11/20/2017", { amount: 5 }));
 norrisCoin.addBlock(new Block(2, "11/21/2017", { amount: 10 }));
 
 console.log('Is blockchain valid?', norrisCoin.isChainValid());
+// attempt to chain coin 2
+norrisCoin.chain[1].data = { amount: 500 };
+norrisCoin.chain[1].hash = norrisCoin.chain[1].calculateHash();
 
+console.log('Is blockchain valid?', norrisCoin.isChainValid());
 
 // console.log(JSON.stringify(norrisCoin, null, 4));
