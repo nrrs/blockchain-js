@@ -17,8 +17,17 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/balance', (req, res, next) => {
-    let user = req.query.user.toLowerCase();
-    if (user === '' || !BALANCES[user]) { res.send('Invalid User'); }
+    let user = req.query.user;
+
+    if (user === undefined) {
+        res.send(BALANCES);
+        return;
+    }
+
+    if (user === '' || !BALANCES[user]) {
+        res.send('Invalid User'); 
+        return;
+    }
     printState();
     res.send(`${user} has ${BALANCES[user]}`);
 });
@@ -35,7 +44,10 @@ app.post('/transfer', (req, res, next) => {
         to = req.body.to.toLowerCase(),
         amount = parseInt(req.body.amount);
     
-    if (BALANCES[from] < amount) { return 'Insufficient Funds.'; }
+    if (BALANCES[from] < amount) { 
+        res.send('Insufficient Funds.'); 
+        return;
+    }
 
     BALANCES[from] -= amount;
     BALANCES[to] += amount;
