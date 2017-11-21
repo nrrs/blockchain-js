@@ -76,6 +76,11 @@ norrisCoin.addBlock(new Block(2, "11/21/2017", { amount: 10 }));
 // norrisCoin.chain[1].data = { amount: 500 };
 // norrisCoin.chain[1].hash = norrisCoin.chain[1].calculateHash();
 
-// console.log('Is blockchain valid?', norrisCoin.isChainValid());
+console.log('Is blockchain valid?', norrisCoin.isChainValid());
 
-// console.log(JSON.stringify(norrisCoin, null, 4));
+console.log(JSON.stringify(norrisCoin, null, 4));
+
+console.log("Mining block 3...");
+norrisCoin.addBlock(new Block(3, "11/21/2017", { amount: 25 }));
+
+console.log(JSON.stringify(norrisCoin, null, 4));
