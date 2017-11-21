@@ -7,16 +7,27 @@ class Block {
         this.previousHash = previousHash;
         this.data = data;
         this.hash = this.calculateHash();
+        this.nonce = 0;
     }
 
     calculateHash() {
-        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data)).toString();
+        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
+    }
+
+    mineBlock(difficulty) {
+        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+            this.nonce++;
+            this.hash = this.calculateHash();
+        }
+
+        console.log('Block mined: ', this.hash);
     }
 }
 
 class Blockchain {
     constructor() {
         this.chain = [this.createGenesisBlock()];
+        this.difficulty = 4;
     }
 
     createGenesisBlock() {
@@ -29,7 +40,8 @@ class Blockchain {
 
     addBlock(newBlock) {
         newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.calculateHash();
+        // newBlock.hash = newBlock.calculateHash();
+        newBlock.mineBlock(this.difficulty);
         this.chain.push(newBlock);
     }
 
@@ -52,14 +64,18 @@ class Blockchain {
 }
 
 let norrisCoin = new Blockchain();
+
+console.log('Mining block 1...');
 norrisCoin.addBlock(new Block(1, "11/20/2017", { amount: 5 }));
+
+console.log('Mining block 2...');
 norrisCoin.addBlock(new Block(2, "11/21/2017", { amount: 10 }));
 
-console.log('Is blockchain valid?', norrisCoin.isChainValid());
-// attempt to chain coin 2
-norrisCoin.chain[1].data = { amount: 500 };
-norrisCoin.chain[1].hash = norrisCoin.chain[1].calculateHash();
+// console.log('Is blockchain valid?', norrisCoin.isChainValid());
+// // attempt to chain coin 2
+// norrisCoin.chain[1].data = { amount: 500 };
+// norrisCoin.chain[1].hash = norrisCoin.chain[1].calculateHash();
 
-console.log('Is blockchain valid?', norrisCoin.isChainValid());
+// console.log('Is blockchain valid?', norrisCoin.isChainValid());
 
 // console.log(JSON.stringify(norrisCoin, null, 4));
