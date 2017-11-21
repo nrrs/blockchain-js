@@ -1,27 +1,24 @@
 const axios = require('axios');
+const querystring = require('querystring');
 
 const URL = 'http://localhost';
 const PORT = 4567;
 
-function getBalance(user) {
-    axios.get(`${URL}:${PORT}/balance`, { 
-        params: {
-            user: user
-        }
-    })
-    .then(res => {
-        
-    });
+function createUser(name) {
+    axios
+      .post(`${URL}:${PORT}/users`, { name })
+      .then(res => console.log(res.data));
 }
 
-// def create_user(name)
-//   Faraday.post("#{URL}:#{PORT}/users", name: name).body
-// end
+function getBalance(user) {
+    axios
+      .get(`${URL}:${PORT}/balance`, { params: { user } })
+      .then(res => console.log(res.data))
+      .catch(err => console.log('Invalid User'));
+}
 
-// def get_balance(user)
-//   Faraday.get("#{URL}:#{PORT}/balance", user: user).body
-// end
-
-// def transfer(from, to, amount)
-//   Faraday.post("#{URL}:#{PORT}/transfers", from: from, to: to, amount: amount).body
-// end
+function transfer(from, to, amount) {
+    axios
+        .post(`${URL}:${PORT}/transfer`, { from, to, amount })
+        .then(res => console.log(res.data));
+}
