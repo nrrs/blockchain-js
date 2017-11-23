@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res, next) => {
-    res.send('Working...');
+    res.send('Stage 1 Working...');
 });
 
 app.get('/balance', (req, res, next) => {
