@@ -7,9 +7,6 @@ const app = express();
 const URL = "http://localhost";
 const PORT = process.argv[2];
 const PEER_PORT = process.argv[3];
-// const PEER_PORT = (process.argv[3] === undefined)
-//     ? 'xxxx'
-//     : process.argv[3];
 
 const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const STATE = {};
@@ -62,7 +59,7 @@ setInterval(() => {
     Object
         .keys(STATE)
         .forEach(port => {
-            if (port === PORT || port === 'xxxx') {
+            if (port === PORT) {
                 return;
             } else {
                 console.log(`Fetching update from ${port}`);
