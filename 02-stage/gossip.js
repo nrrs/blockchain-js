@@ -8,22 +8,28 @@ const app = express();
 const PORT = process.argv[2],
     PEER_PORT = process.argv[3];
 
-// Express
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
-app.get("/", (req, res, next) => {
-    res.send("Stage 2 Working...");
-});
-app.post("/gossip", (req, res, next) => {
-    let state = req.body.state;
-    updateState(state);
-    res.send(JSON.stringify(STATE));
-});
-
-app.listen(PORT, () => console.log(`listenting on port ${PORT}`));
-
 const STATE = {};
+
+const axios = require("axios");
+
+const URL = "http://localhost";
+
+class Client {
+  constructor() {}
+  gossip(port, state) {
+    if (port === PORT) {
+      return JSON.stringify({});
+    }
+
+    axios
+      .post(`${URL}:${port}/gossip`, { state })
+      .then(res => {
+        console.log("Client post SUCCESS");
+        return res.data;
+      })
+      .catch(err => console.log("Client post FAIL"));
+  }
+}
 
 updateState({[PORT]: null});
 updateState({[PEER_PORT]: null});
@@ -49,29 +55,6 @@ updateState({
 //     [PORT]: [faveLetter, versionNum]
 // });
 
-// Randomly select new 
-
-
-const axios = require("axios");
-
-const URL = "http://localhost";
-
-class Client {
-  constructor() {}
-  gossip(port, state) {
-    if (port === PORT) {
-      return JSON.stringify({});
-    }
-
-    axios
-      .post(`${URL}:${port}/gossip`, { state })
-      .then(res => {
-          console.log('Client post SUCCESS');
-          return res.data;
-        })
-      .catch(err => console.log('Client post FAIL'));
-  }
-}
 // Change state every 8 seconds
 setInterval(() => {
     faveLetter = ALPHA.random();
@@ -126,3 +109,18 @@ function renderState() {
     });
     console.log('-'.repeat(40));
 }
+
+// Express
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.get("/", (req, res, next) => {
+    res.send("Stage 2 Working...");
+});
+app.post("/gossip", (req, res, next) => {
+    let state = req.body.state;
+    updateState(state);
+    res.send(JSON.stringify(STATE));
+});
+
+app.listen(PORT, () => console.log(`listenting on port ${PORT}`));
