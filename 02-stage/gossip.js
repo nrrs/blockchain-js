@@ -23,15 +23,15 @@ class Client {
         } else {
             axios
                 .post(`${URL}:${port}/gossip`, {state})
-                .then(res => res.data)
+                .then(res => {
+                    return res.data;
+                })
                 .catch(err => console.log("Client POST FAIL: no peer port"));
+
         }
 
     }
 }
-
-updateState({[PORT]: null});
-updateState({[PEER_PORT]: null});
 
 let faveLetter = ALPHA.random();
 let versionNum = 0;
@@ -41,6 +41,7 @@ console.log(`My favorite letter is ${faveLetter}\n`);
 updateState({
     [PORT]: [faveLetter, versionNum]
 });
+updateState({ [PEER_PORT]: ['undetermined', 0] });
 
 // Change fave letter every 8 seconds
 setInterval(() => {
@@ -65,9 +66,7 @@ setInterval(() => {
                 console.log(`Fetching update from ${port}`);
                 let gossipResponse = new Client();
                 gossipResponse = gossipResponse.gossip(port, STATE);
-                if (!gossipResponse) {
-                    updateState(gossipResponse);
-                }
+                updateState(gossipResponse);
             }
         });
     renderState();
@@ -80,7 +79,9 @@ function updateState(update) {
         if (update.hasOwnProperty(port)) {
             if (port === 'undefined') {
                 return;
-            } else {
+            } else if (STATE[port] === undefined) {
+                STATE[port] = update[port];
+            } else if (update[port][1] > STATE[port][1]) {
                 STATE[port] = update[port];
             }
         }
@@ -105,6 +106,10 @@ function renderState() {
 // Express
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.get("/", (req, res, next) => {
+    res.send(`${PORT} Working...`);
+});
 
 app.post("/gossip", (req, res, next) => {
     let state = req.body.state;
