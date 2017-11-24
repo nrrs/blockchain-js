@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "axios": "^0.17.1",
-    "express": "^4.16.2"
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "express": "^4.16.2",
+    "webpack": "^3.8.1"
   }
 }

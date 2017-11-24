@@ -7,6 +7,9 @@ const app = express();
 const URL = "http://localhost";
 const PORT = process.argv[2];
 const PEER_PORT = process.argv[3];
+// const PEER_PORT = (process.argv[3] === undefined)
+//     ? 'xxxx'
+//     : process.argv[3];
 
 const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const STATE = {};
@@ -20,15 +23,13 @@ class Client {
     gossip(port, state) {
         if (port === PORT) {
             return JSON.stringify({});
+        } else {
+            axios
+                .post(`${URL}:${port}/gossip`, {state})
+                .then(res => res.data)
+                .catch(err => console.log("Client POST FAIL: no peer port"));
         }
 
-        axios
-            .post(`${URL}:${port}/gossip`, {state})
-            .then(res => {
-                console.log("Client post SUCCESS");
-                return res.data;
-            })
-            .catch(err => console.log("Client post FAIL"));
     }
 }
 
@@ -51,10 +52,9 @@ setInterval(() => {
     updateState({
         [PORT]: [faveLetter, versionNum]
     });
-    console.log('\n');
     console.log("!".repeat(40));
     console.log(`Nevermind, my new favorte letter is ${faveLetter}`);
-    console.log("!".repeat(40), '\n');
+    console.log("!".repeat(40), '\n\n');
 }, 8000);
 
 // Fetch updates every 3 secs
@@ -62,25 +62,27 @@ setInterval(() => {
     Object
         .keys(STATE)
         .forEach(port => {
-            if (port === PORT) {
+            if (port === PORT || port === 'xxxx') {
                 return;
+            } else {
+                console.log(`Fetching update from ${port}`);
+                let gossipResponse = new Client();
+                gossipResponse = gossipResponse.gossip(port, STATE);
+                if (!gossipResponse) {
+                    updateState(gossipResponse);
+                }
             }
-            console.log(`\nFetching update from ${port}`);
-
-            let gossipResponse = new Client();
-            gossipResponse = gossipResponse.gossip(port, STATE);
-            updateState(gossipResponse);
         });
-
     renderState();
-}, 1000);
+    console.log('\n');
+}, 2000);
 
 // Helpers
 function updateState(update) {
     for (let port in update) {
         if (update.hasOwnProperty(port)) {
-            if (update[port] === null) {
-                STATE[port] = null;
+            if (port === 'undefined') {
+                return;
             } else {
                 STATE[port] = update[port];
             }
@@ -95,7 +97,7 @@ function renderState() {
         .keys(STATE)
         .forEach(port => {
             if (STATE[port] === null) {
-                console.log(`${port} doesn't have a fave letter yet`);
+                return;
             } else {
                 console.log(`${port} fave letter is ${STATE[port][0]}`);
             }
@@ -107,9 +109,6 @@ function renderState() {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.get("/", (req, res, next) => {
-    res.send("Stage 2 Working...");
-});
 app.post("/gossip", (req, res, next) => {
     let state = req.body.state;
     updateState(state);
