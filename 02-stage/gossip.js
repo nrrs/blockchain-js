@@ -90,7 +90,7 @@ setInterval(() => {
             if (port === PORT) {
                 return;
             }
-            console.log(`Fetching update from ${port}`);
+            console.log(`\nFetching update from ${port}`);
             
             let gossipResponse = new Client();
             gossipResponse = gossipResponse.gossip(port, STATE);
@@ -99,7 +99,7 @@ setInterval(() => {
         });
     
         renderState();
-}, 3000);
+}, 1000);
 
 // Helpers
 function updateState(update) {
