@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "axios": "^0.17.1",
+    "babel-preset-env": "^1.6.1",
     "express": "^4.16.2"
   }
 }

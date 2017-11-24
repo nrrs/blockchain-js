@@ -4,7 +4,11 @@ module.exports = {
         console.log(update);
         for (let port in update) {
           if (update.hasOwnProperty(port)) {
-            console.log(`${port}: `, update[port]);
+            if (update[port] === null) {
+                STATE[port] = null;
+            } else {
+                STATE[port] = update[port];
+            }
           }
         }
     },
