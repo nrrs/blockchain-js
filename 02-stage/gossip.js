@@ -26,13 +26,13 @@ class Client {
                 .then(res => {
                     return res.data;
                 })
-                .catch(err => console.log("Client POST FAIL: no peer port"));
-
+                .catch(err => console.log("Client POST FAIL: no peer port:", port));
         }
 
     }
 }
 
+const client = new Client();
 let faveLetter = ALPHA.random();
 let versionNum = 0;
 
@@ -63,22 +63,24 @@ setInterval(() => {
             if (port === PORT) {
                 return;
             } else {
+                let gossipResponse = client.gossip(port, STATE);
+
                 console.log(`Fetching update from ${port}`);
-                let gossipResponse = new Client();
-                gossipResponse = gossipResponse.gossip(port, STATE);
                 updateState(gossipResponse);
             }
         });
     renderState();
     console.log('\n');
-}, 2000);
+}, 3000);
 
 // Helpers
 function updateState(update) {
+    if (update === undefined) { return; }
+    
     for (let port in update) {
         if (update.hasOwnProperty(port)) {
             if (port === 'undefined') {
-                return;
+                delete STATE[port];
             } else if (STATE[port] === undefined) {
                 STATE[port] = update[port];
             } else if (update[port][1] > STATE[port][1]) {
